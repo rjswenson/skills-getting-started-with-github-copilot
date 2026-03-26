@@ -88,9 +88,16 @@ def get_activities():
     return JSONResponse(content=activities, headers={"Cache-Control": "no-store"})
 
 
+def validate_email(email: str):
+    if not email.strip():
+        raise HTTPException(status_code=400, detail="Email is required")
+
+
 @app.post("/activities/{activity_name}/signup")
 def signup_for_activity(activity_name: str, email: str):
     """Sign up a student for an activity"""
+    validate_email(email)
+
     # Validate activity exists
     if activity_name not in activities:
         raise HTTPException(status_code=404, detail="Activity not found")
@@ -110,6 +117,8 @@ def signup_for_activity(activity_name: str, email: str):
 @app.delete("/activities/{activity_name}/participants")
 def unregister_from_activity(activity_name: str, email: str):
     """Remove a student from an activity"""
+    validate_email(email)
+
     if activity_name not in activities:
         raise HTTPException(status_code=404, detail="Activity not found")
 
